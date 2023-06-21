@@ -1,1 +1,1 @@
-export const LocalStorageKey: string = "todos_todos";
+export const LocalStorageKey = "todos_todos";

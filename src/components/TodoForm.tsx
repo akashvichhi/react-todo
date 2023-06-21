@@ -45,7 +45,7 @@ const TodoForm = ({
     }
 
     const save = () => {
-        let errors: Error = {};
+        const errors: Error = {};
         if (!input.title.trim()) errors.title = "Title is required";
         if (!input.description.trim()) errors.description = "Description is required";
         setErrors({ ...errors });
