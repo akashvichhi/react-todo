@@ -1,5 +1,5 @@
 export default interface Todo {
-    [key: string]: any;
+    [key: string]: any; // eslint-disable-line
     id?: number;
     title: string;
     description: string;

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { Suspense, useDeferredValue, useState } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
@@ -18,6 +18,7 @@ import TodoList from "../../components/TodoList";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { markTodoAsComplete, markTodoAsNotComplete, removeTodo, removeTodosById } from "../../reducers/Todo";
 import { RootState } from "../../app/store";
+import { filterTodos } from "../../helper/todoHelper";
 
 const emptyTodo: Todo = {
     title: "",
@@ -28,10 +29,12 @@ const TodoStatusButton = ({
     label,
     active = false,
     onClick,
+    count,
 }: {
     label: string,
     active?: boolean,
     onClick?: () => void,
+    count: number,
 }) => {
     return (
         <ListItem disablePadding>
@@ -43,7 +46,7 @@ const TodoStatusButton = ({
                     p: 2,
                 }}
             >
-                {label}
+                {label} <Typography fontSize={13} ml={1}>({count})</Typography>
             </ListItemButton>
         </ListItem>
     )
@@ -57,6 +60,8 @@ const TodoComponent = () => {
     const [todoItem, setTodoItem] = useState<Todo | null>(null);
     const [todoStatus, setTodoStatus] = useState<TodoStatus>("all");
     const [checkedTodos, setCheckedTodos] = useState<number[]>([]);
+    const searchDefer: string = useDeferredValue(search);
+    const todoStatusDefer: TodoStatus = useDeferredValue(todoStatus);
 
     const onSeach = (event: React.ChangeEvent<HTMLInputElement>) => {
         const searchValue: string = event.target.value;
@@ -99,7 +104,7 @@ const TodoComponent = () => {
     return (
         <Container maxWidth="xl">
             <Typography component="h1" fontSize={28} mt={1}>Todo App</Typography>
-            <Paper variant="outlined" sx={{ mt: 2 }}>
+            <Paper variant="outlined" sx={{ mt: 2, mb: 3 }}>
                 <Stack direction={"row"} justifyContent="space-between" gap={3} sx={{ p: 2, borderBottom: "1px solid rgba(0, 0, 0, 0.12)" }}>
                     <Box>
                         <Button startIcon={<IconAdd />} variant="contained" onClick={() => addEditTodo()}>Add</Button>
@@ -107,15 +112,15 @@ const TodoComponent = () => {
                     <Stack direction={"row"} gap={2}>
                         {
                             todos.length > 0 && checkedTodos.length > 0
-                            ? <React.Fragment>
-                                {
-                                    todoStatus === "in-progress" || todoStatus === "all"
-                                    ? <Button variant="contained" color="success" onClick={markAsComplete}>Mark as Complete</Button>
-                                    : <Button variant="contained" color="warning" onClick={markAsNotComplete}>Mark as Not Complete</Button>
-                                }
-                                <Button variant="contained" color="error" onClick={deleteById}>Delete</Button>
-                            </React.Fragment>
-                            : null
+                                ? <React.Fragment>
+                                    {
+                                        todoStatus === "in-progress" || todoStatus === "all"
+                                            ? <Button variant="contained" color="success" onClick={markAsComplete}>Mark as Complete</Button>
+                                            : <Button variant="contained" color="warning" onClick={markAsNotComplete}>Mark as Not Complete</Button>
+                                    }
+                                    <Button variant="contained" color="error" onClick={deleteById}>Delete</Button>
+                                </React.Fragment>
+                                : null
                         }
                         <TextField
                             label="Search"
@@ -140,29 +145,34 @@ const TodoComponent = () => {
                                 label="All"
                                 active={todoStatus ===  "all"}
                                 onClick={() => setTodoStatus("all")}
+                                count={todos.length}
                             />
                             <TodoStatusButton
                                 label="In Progress"
                                 active={todoStatus ===  "in-progress"}
                                 onClick={() => setTodoStatus("in-progress")}
+                                count={filterTodos({ todos, status: "in-progress" }).length}
                             />
                             <TodoStatusButton
                                 label="Completed"
                                 active={todoStatus === "completed"}
                                 onClick={() => setTodoStatus("completed")}
+                                count={filterTodos({ todos, status: "completed" }).length}
                             />
                         </List>
                     </Box>
                     <Box flex="1 1 auto">
-                        <TodoList
-                            search={search}
-                            todoStatus={todoStatus}
-                            onEdit={addEditTodo}
-                            onDelete={deleteTodo}
-                            onCheck={onCheckTodos}
-                            checkedTodos={checkedTodos}
-                            setCheckedTodos={setCheckedTodos}
-                        />
+                        <Suspense fallback={<>Loading...</>}>
+                            <TodoList
+                                search={searchDefer}
+                                todoStatus={todoStatusDefer}
+                                onEdit={addEditTodo}
+                                onDelete={deleteTodo}
+                                onCheck={onCheckTodos}
+                                checkedTodos={checkedTodos}
+                                setCheckedTodos={setCheckedTodos}
+                            />
+                        </Suspense>
                     </Box>
                 </Box>
             </Paper>

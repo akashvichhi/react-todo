@@ -40,7 +40,9 @@ export const todoSlice = createSlice({
             try {
                 todos = JSON.parse(localStorage.getItem(LocalStorageKey) ?? "[]");
             }
-            catch (ex) {}
+            catch (ex) {
+                // 
+            }
             state.todos = [ ...todos ];
         },
         addTodo: (state: TodoState, action: PayloadAction<Todo>) => {

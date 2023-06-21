@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Checkbox from "@mui/material/Checkbox";
-import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
+import Pagination from "@mui/material/Pagination";
 import IconButton from "@mui/material/IconButton";
 import Divider from "@mui/material/Divider";
 import List from "@mui/material/List";
@@ -12,11 +11,15 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { RootState } from "../app/store";
 import Todo, { TodoStatus } from "../types/Todo";
 import { getTodos } from "../reducers/Todo";
 import { filterTodos } from "../helper/todoHelper";
+
+const PER_PAGE = 20;
 
 interface TodoListProps {
     search?: string;
@@ -39,7 +42,9 @@ const TodoList = ({
 }: TodoListProps) => {
     const dispatch = useAppDispatch();
     const { todos } = useAppSelector((state: RootState) => state.todo);
-    const [filteredTodos, setFilteredTodos] = useState<Todo[]>([]);
+    const [page, setPage] = useState<number>(1);
+    const filteredTodos: Todo[] = filterTodos({ todos, search, status: todoStatus });
+    const todoList: Todo[] = filteredTodos.slice((page - 1) * PER_PAGE, page * PER_PAGE);
 
     const handleCheckTodo = (id: number | undefined) => {
         if (id) {
@@ -55,20 +60,24 @@ const TodoList = ({
         }
     }
 
+    const handleChangePage = (event: React.ChangeEvent<unknown>, value: number) => {
+        setPage(value);
+    };
+
     useEffect(() => {
         dispatch(getTodos());
     }, []); // eslint-disable-line
 
     useEffect(() => {
-        setFilteredTodos(filterTodos({ todos, search, status: todoStatus }));
+        setPage(1);
     }, [todos, search, todoStatus]);
 
     return (
         <React.Fragment>
-            {filteredTodos.length > 0
+            {todoList.length > 0
                 ? <Box>
                     <List dense={true}>
-                        {filteredTodos.map((todo: Todo, index: number) => {
+                        {todoList.map((todo: Todo, index: number) => {
                             return (
                                 <React.Fragment key={todo.id || index}>
                                     {index !== 0 ? <Divider component="li" /> : null}
@@ -108,6 +117,20 @@ const TodoList = ({
                             )
                         })}
                     </List>
+                    {filteredTodos.length > PER_PAGE
+                        ? <Box my={3}>
+                            <Pagination
+                                count={Math.ceil(filteredTodos.length / PER_PAGE)}
+                                variant="outlined"
+                                shape="rounded"
+                                page={page}
+                                onChange={handleChangePage}
+                                color="primary"
+                                sx={{ ".MuiPagination-ul": { justifyContent: "center" }}}
+                            />
+                        </Box>
+                        : null
+                    }
                 </Box>
                 : <Typography textAlign="center" mt={2}>No todos found</Typography>
             }
