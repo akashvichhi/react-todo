@@ -25,6 +25,7 @@
         "space-in-parens": "error",
         "no-loop-func": "error",
         "array-callback-return": "error",
-        "no-empty-function": "error"
+        "no-empty-function": "error",
+        "@typescript-eslint/no-inferrable-types": "off"
     }
 }

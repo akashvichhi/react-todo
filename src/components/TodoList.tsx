@@ -74,13 +74,13 @@ const TodoList = ({
 
     return (
         <React.Fragment>
+            <Typography color="gray" fontSize={14} ml={2} my={1}>Showing {filteredTodos.length} results</Typography>
             {todoList.length > 0
                 ? <Box>
-                    <List dense={true}>
+                    <List dense={true} sx={{ p: 0 }}>
                         {todoList.map((todo: Todo, index: number) => {
                             return (
                                 <React.Fragment key={todo.id || index}>
-                                    {index !== 0 ? <Divider component="li" /> : null}
                                     <ListItem
                                         secondaryAction={
                                             <Stack direction="row">
@@ -113,6 +113,7 @@ const TodoList = ({
                                             />
                                         </ListItemButton>
                                     </ListItem>
+                                    <Divider component="li" />
                                 </React.Fragment>
                             )
                         })}
@@ -132,7 +133,7 @@ const TodoList = ({
                         : null
                     }
                 </Box>
-                : <Typography textAlign="center" mt={2}>No todos found</Typography>
+                : null
             }
         </React.Fragment>
     )

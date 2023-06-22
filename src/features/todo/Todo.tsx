@@ -100,6 +100,9 @@ const TodoComponent = () => {
         dispatch(removeTodosById(checkedTodos));
         setCheckedTodos([]);
     }
+
+    const showMarkAsCompleteBtn: boolean = todoStatus === "all" || todoStatus === "in-progress";
+    const showMarkAsNotCompleteBtn: boolean = todoStatus === "all" || todoStatus === "completed";
     
     return (
         <Container maxWidth="xl">
@@ -114,9 +117,10 @@ const TodoComponent = () => {
                             todos.length > 0 && checkedTodos.length > 0
                                 ? <React.Fragment>
                                     {
-                                        todoStatus === "in-progress" || todoStatus === "all"
-                                            ? <Button variant="contained" color="success" onClick={markAsComplete}>Mark as Complete</Button>
-                                            : <Button variant="contained" color="warning" onClick={markAsNotComplete}>Mark as Not Complete</Button>
+                                        showMarkAsCompleteBtn && <Button variant="contained" color="success" onClick={markAsComplete}>Mark as Complete</Button>
+                                    }
+                                    {
+                                        showMarkAsNotCompleteBtn && <Button variant="contained" color="warning" onClick={markAsNotComplete}>Mark as Not Complete</Button>
                                     }
                                     <Button variant="contained" color="error" onClick={deleteById}>Delete</Button>
                                 </React.Fragment>
