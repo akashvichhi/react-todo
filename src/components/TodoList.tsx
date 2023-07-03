@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Box from "@mui/material/Box";
 import Checkbox from "@mui/material/Checkbox";
 import Pagination from "@mui/material/Pagination";
@@ -43,8 +43,8 @@ const TodoList = ({
     const dispatch = useAppDispatch();
     const { todos } = useAppSelector((state: RootState) => state.todo);
     const [page, setPage] = useState<number>(1);
-    const filteredTodos: Todo[] = filterTodos({ todos, search, status: todoStatus });
-    const todoList: Todo[] = filteredTodos.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+    const filteredTodos: Todo[] = useMemo(() => filterTodos({ todos, search, status: todoStatus }), [ todos, search, todoStatus ]);
+    const todoList: Todo[] = useMemo(() => filteredTodos.slice((page - 1) * PER_PAGE, page * PER_PAGE), [ filteredTodos, page ]);
 
     const handleCheckTodo = (id: number | undefined) => {
         if (id) {
