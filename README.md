@@ -1,5 +1,7 @@
 # Getting Started with TODO Application using Create React App
 
+Live demo: [https://akashvichhi.github.io/react-todo/](https://akashvichhi.github.io/react-todo/)
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app), using the [Redux](https://redux.js.org/) and [Redux Toolkit](https://redux-toolkit.js.org/) TS template. The [Material UI](https://mui.com/) is used as UI library for the project.
 
 ## Available Scripts
